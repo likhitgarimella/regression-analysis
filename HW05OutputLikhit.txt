@@ -1,0 +1,120 @@
+> # Likhit Garimella
+> # Regression Analysis HW-5
+> 
+> # libraries
+> #install.packages("faraway")
+> #install.packages("olsrr")
+> #install.packages("car")
+> #install.packages("readr")
+> 
+> library(faraway)
+> library(olsrr)
+> library(car)
+> library(readr)
+> 
+> # (a) generate a basic scatter plot matrix
+> 
+> data <- read_csv('C:/Users/91630/Downloads/B17.csv',show_col_types = FALSE)
+> head(data, 5)                                                                                                                                                                                                        
+# A tibble: 5 × 5
+  Satisfaction   Age Severity SurgicalMedical Anxiety
+         <dbl> <dbl>    <dbl>           <dbl>   <dbl>
+1           68    55       50               0     2.1
+2           77    46       24               1     2.8
+3           96    30       46               1     3.3
+4           80    35       48               1     4.5
+5           43    59       58               0     2  
+> pairs(data[,1:4], pch = 19,lower.panel=NULL)
+> 
+> # (b) generate a correlation matrix
+> 
+> corr_matrix = cor(data)
+> round(corr_matrix,3)
+                Satisfaction    Age Severity SurgicalMedical Anxiety
+Satisfaction           1.000 -0.871   -0.653          -0.182  -0.513
+Age                   -0.871  1.000    0.529           0.246   0.621
+Severity              -0.653  0.529    1.000           0.178   0.447
+SurgicalMedical       -0.182  0.246    0.178           1.000   0.110
+Anxiety               -0.513  0.621    0.447           0.110   1.000
+> 
+> #install.packages("Hmisc")
+> library("Hmisc")
+> 
+> correlation_matrix1 = rcorr(as.matrix(data))
+> correlation_matrix1
+                Satisfaction   Age Severity SurgicalMedical Anxiety
+Satisfaction            1.00 -0.87    -0.65           -0.18   -0.51
+Age                    -0.87  1.00     0.53            0.25    0.62
+Severity               -0.65  0.53     1.00            0.18    0.45
+SurgicalMedical        -0.18  0.25     0.18            1.00    0.11
+Anxiety                -0.51  0.62     0.45            0.11    1.00
+
+n= 25 
+
+
+P
+                Satisfaction Age    Severity SurgicalMedical Anxiety
+Satisfaction                 0.0000 0.0004   0.3832          0.0088 
+Age             0.0000              0.0065   0.2365          0.0009 
+Severity        0.0004       0.0065          0.3959          0.0250 
+SurgicalMedical 0.3832       0.2365 0.3959                   0.6018 
+Anxiety         0.0088       0.0009 0.0250   0.6018                 
+> 
+> # (c) obtain least squares prediction equation
+> 
+> model = lm(Satisfaction~.,data=data)
+> summary(model)
+
+Call:
+lm(formula = Satisfaction ~ ., data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-18.506  -5.096   1.306   4.738  28.722 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     140.1689     8.3191  16.849 2.77e-13 ***
+Age              -1.1428     0.1904  -6.002 7.22e-06 ***
+Severity         -0.4699     0.1866  -2.518   0.0204 *  
+SurgicalMedical   2.2259     4.1402   0.538   0.5968    
+Anxiety           1.2673     1.4922   0.849   0.4058    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 9.921 on 20 degrees of freedom
+Multiple R-squared:  0.8183,	Adjusted R-squared:  0.7819 
+F-statistic: 22.51 on 4 and 20 DF,  p-value: 3.611e-07
+
+> 
+> # Based on the coefficients presented in the Model Summary, the prediction equation obtained through the least square method can be expressed as follows:
+> # Satisfaction = 140.168 - 1.1428 * Age - 0.4699 * Severity + 2.2259 * SurgicalMedical + 1.2673 * Anxiety
+> 
+> # (d) compute VIFs
+> 
+> VIF = vif(model)
+> print(VIF)
+            Age        Severity SurgicalMedical         Anxiety 
+       1.939128        1.441055        1.072782        1.689768 
+> 
+> # (e) interpret the Beta estimate of Anxiety in the model
+> 
+> # The estimated Beta coefficient for Anxiety in the model is 1.2673, indicating that, on average, an increase in Anxiety is associated with an increase in Satisfaction.
+> # However, it's important to note that the p-value for the Anxiety coefficient is 0.4058, which is higher than the commonly accepted threshold of 0.05 for statistical significance.
+> # This suggests that the observed relationship between Anxiety and Satisfaction may not be statistically significant in the given model, and the estimated effect of Anxiety on Satisfaction may not be reliable.
+> # Furthermore, the Variance Inflation Factor (VIF) for Anxiety is 1.689768, indicating that there is no significant issue of multicollinearity between Anxiety and the other independent variables in the model.
+> # To summarize, while the Beta estimate for Anxiety suggests a positive relationship with Satisfaction, it is not statistically significant in the current model.
+> # Therefore, it is important to interpret this estimate with caution, as it may not provide strong evidence of a meaningful relationship between Anxiety and Satisfaction.
+> 
+> # (f) perform a partial F-test for Anxiety
+> model_without_anxiety = lm(Satisfaction~Age+Severity+SurgicalMedical, data=data)
+> anov = anova(model_without_anxiety, model)
+> print(anov)
+Analysis of Variance Table
+
+Model 1: Satisfaction ~ Age + Severity + SurgicalMedical
+Model 2: Satisfaction ~ Age + Severity + SurgicalMedical + Anxiety
+  Res.Df    RSS Df Sum of Sq      F Pr(>F)
+1     21 2039.5                           
+2     20 1968.5  1     70.99 0.7212 0.4058
+> 
