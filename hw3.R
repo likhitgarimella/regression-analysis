@@ -1,0 +1,56 @@
+# Likhit Garimella
+# Regression Analysis HW-3
+
+# libraries
+#install.packages("readr")
+library(readr)
+
+# importing dataset
+data <- read_csv('/Users/likhitgarimella/Desktop/SummerSemester/B1.csv',show_col_types = FALSE)
+data
+
+# creating data frame with the columns of interest
+df <- data.frame(y = data$y, x2 = data$x2, x7 = data$x7, x8 = data$x8)
+
+# fit the multiple regression model
+model <- lm(y ~ x2 + x7 + x8, data = data)
+model_summary <- summary(model)
+
+# model summary
+summary(model)
+
+# (a) calculating confidence intervals
+confidence_interval <- confint(model, "x7", level = 0.95)
+confidence_interval
+
+# (b) defining values of x2, x7, and x8
+x2 <- 2300
+x7 <- 56.0
+x8 <- 2100
+
+# new data frame with the specific values
+new_data <- data.frame(x2 = x2, x7 = x7, x8 = x8)
+
+# using the model to predict the confidence interval of number of games won
+pred_conf <- predict(model, newdata = new_data, interval = "confidence", level = 0.95)
+pred_conf
+
+# (c) using the model to predict the prediction interval number of games won
+predictions_pred <- predict(model, newdata = new_data, interval = "prediction", level = 0.95)
+predictions_pred
+
+# 3.3 (d) interpretation explanation
+#
+# a) The 95% confidence interval for β7 is (0.01185532, 0.3760651). 
+# This interval suggests that there is strong evidence to support the hypothesis that the variable x7 has a positive and significant impact on the number of games won by a team.
+# We can be 95% confident that the true population value of the coefficient β7 lies within this interval.
+#
+# b) The 95% confidence interval for the mean number of games won, when x2 = 2300, x7 = 56.0, and x8 = 2100, is (6.436203, 7.996645).
+# This interval indicates that if we were to conduct the experiment multiple times with teams having these specific values of x2, x7, and x8, 95% of the resulting confidence intervals would contain the true population mean number of games won.
+# In practical terms, it provides a range within which we can be 95% confident that the actual mean number of games won falls.
+#
+# c) The 95% prediction interval for the number of games won is (3.609523, 10.82332).
+# This prediction interval accounts for both the uncertainty associated with the regression model and the variability of individual observations.
+# For a specific team with x2 = 2300, x7 = 56.0, and x8 = 2100, we can be 95% confident that the actual number of games won will fall within this interval.
+# In other words, the prediction interval provides a range within which we expect the true value to lie with a certain level of confidence.
+#

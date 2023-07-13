@@ -1,0 +1,37 @@
+# Likhit Garimella
+# Regression Analysis HW-2
+
+# libraries
+#install.packages("faraway")
+#install.packages("olsrr")
+#install.packages("psych")
+#install.packages("readr")
+library(faraway)
+library(olsrr)
+library(psych)
+library(readr)
+
+# import dataset
+data1 <- read.csv("/Users/likhitgarimella/Desktop/SummerSemester/B4.csv", header = T, sep = ",")
+data1
+
+# (a) fitting the multiple regression model
+fitMod <- lm(y ~ ., data = data1)
+sum1 <- summary(fitMod)
+fitMod
+
+# (b) test for significance of regression -> output from console
+sum1
+
+# (d)
+newMod <- lm(y ~ x1 + x2 + x5 + x6 + x7 + x8 + x9, data = data1)
+sum2 <- summary(newMod)
+
+anov1 <- anova(fitMod)
+anov2 <- anova(newMod)
+
+F_34 <- round((sum(anov1$`Sum Sq`[1:9])-sum(anov2$`Sum Sq`[1:7]))/2/anov1$`Mean Sq`[10], 4)
+p_34 <- round(1-pf(F_34, 2, 14), 4)
+
+# (e)
+vif(fitMod)
