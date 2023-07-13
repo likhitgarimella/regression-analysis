@@ -1,0 +1,154 @@
+> # Likhit Garimella
+> # Regression Analysis HW-4
+> 
+> # libraries
+> #install.packages("faraway")
+> #install.packages("olsrr")
+> #install.packages("car")
+> #install.packages("readr")
+> 
+> library(faraway)
+> library(olsrr)
+> library(car)
+> library(readr)
+> 
+> # importing dataset
+> myData <- read.csv('C:/Users/91630/Downloads/B5.csv', header = T, sep = ",")
+> 
+> # (a) fitting multiple regression model
+> fitMod <- lm(y ~ x6 + x7, data = myData)
+> summ <- summary(fitMod)
+> fitMod
+
+Call:
+lm(formula = y ~ x6 + x7, data = myData)
+
+Coefficients:
+(Intercept)           x6           x7  
+    2.52646      0.01852      2.18575  
+
+###
+The linear regression model between CO2 product and total solvent (x6) and hydrogen consumption (x7) is
+yˆ = 2.52646 + 0.01852x6 + 2.18575x7.
+The slope for x6, x7 are greater than 0, which indicates there may be positive trends between them. When the total solvent increases 1 unit, CO2 would increase 0.01852 units. When the hydrogen consumption increases 1 unit, CO2 would increase 2.18575 units.
+###
+
+> 
+> # (b) test for significance of regression, calculating R^2 and R_adj^2
+> summ
+
+Call:
+lm(formula = y ~ x6 + x7, data = myData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-23.2035  -4.3713   0.2513   4.9339  21.9682 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 2.526460   3.610055   0.700   0.4908    
+x6          0.018522   0.002747   6.742 5.66e-07 ***
+x7          2.185753   0.972696   2.247   0.0341 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 9.924 on 24 degrees of freedom
+Multiple R-squared:  0.6996,	Adjusted R-squared:  0.6746 
+F-statistic: 27.95 on 2 and 24 DF,  p-value: 5.391e-07
+
+###
+Since F statistics is 27.95 and p-value is 0, which is less than significance level (0.05), we would reject H0 : β6 = β7 = 0 and conclude there is a linear relationship between CO2 product y and any of the regressors x6, x7.
+R^2 in this model is 0.6996, indicating that 0.6996 of the total variability in CO2 product is explained by this model. Adjusted R^2 is 0.6746.
+###
+
+###
+(c)
+From result in (b), we can see that the p-values of t statistics for β6 (0) and β7 (0.0341) are both less than significance level (0.05), which indicates that there are contributions of these 2 variables to the model.
+###
+
+> 
+> # (d) constructing 95% CIs on B_6 & B_7
+> CI <- round(confint(fitMod, level = 0.95), 4)
+> CI
+              2.5 % 97.5 %
+(Intercept) -4.9243 9.9772
+x6           0.0129 0.0242
+x7           0.1782 4.1933
+
+###
+The 95% CI on β6 is [0.0129, 0.0242]. In other words, 95% of such intervals will include the true value of the slope. The 95% CI on β7 is [0.1782, 4.1933]. In other words, 95% of such intervals will include the true value of the slope.
+###
+
+> 
+> # (e) refitting the model using only x6 as regressor
+> fitMod1 <- lm(y ~ x6, data = myData)
+> summ1 <- summary(fitMod1)
+> summ1
+
+Call:
+lm(formula = y ~ x6, data = myData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-28.081  -5.829  -0.839   5.522  26.882 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 6.144181   3.483064   1.764   0.0899 .  
+x6          0.019395   0.002932   6.616 6.24e-07 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 10.7 on 25 degrees of freedom
+Multiple R-squared:  0.6365,	Adjusted R-squared:  0.6219 
+F-statistic: 43.77 on 1 and 25 DF,  p-value: 6.238e-07
+
+###
+The linear regression model between CO2 product and total solvent (x6) is
+yˆ = 6.14418 + 0.01939x6.
+Since F statistics is 43.77 and p-value is 0, which is less than significance level (0.05), we would reject H0 : β6 = 0 and conclude there is a linear relationship between CO2 product y and total solvent (x6).
+R^2 in this model is 0.6365, indicating that 0.6365 of the total variability in CO2 product is explained by this model. Adjusted R^2 is 0.6219.
+Comparing the adjusted R^2 in these 2 models 0.6746 (full model) and 0.6219 (reduced model), the difference between these are small, indicating that we can explain CO2 product good only with x6. At the same time, the test for significance of reduced model (only with x6) is also significant. Therefore, the model only with x6 is also good.
+###
+
+> 
+> # (f) constructing a 95% CI on B_6 using the above model fit
+> CI <- round(confint(fitMod1, level = 0.95), 4)
+> CI
+              2.5 %  97.5 %
+(Intercept) -1.0293 13.3177
+x6           0.0134  0.0254
+
+###
+The 95% CI on β6 is [0.0134, 0.0254] (length is 0.012), while the 95% CI in part (d) (length is 0.0113). The length of this confidence interval is almost exactly the same as the one from the model including x7. So x7 may not provide much contribution to the model.
+###
+
+> 
+> # (g) comparing values of MS_Res obtained for 2 models from (a) & (e)
+> anov1 <- anova(fitMod)
+> anov2 <- anova(fitMod1)
+> anov1
+Analysis of Variance Table
+
+Response: y
+          Df Sum Sq Mean Sq F value    Pr(>F)    
+x6         1 5008.9  5008.9 50.8557 2.267e-07 ***
+x7         1  497.3   497.3  5.0495    0.0341 *  
+Residuals 24 2363.8    98.5                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # analysis
+> anov2
+Analysis of Variance Table
+
+Response: y
+          Df Sum Sq Mean Sq F value    Pr(>F)    
+x6         1 5008.9  5008.9  43.766 6.238e-07 ***
+Residuals 25 2861.2   114.4                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+###
+MS_Res is 98.5 when x6 and x7 are in the model, while MS_Res is 114.4 when there is only x6 in the model. We can see MS_Res is lower when x6 and x7 are both in the model. So we can conclude that x7 does have some contribution in the linear model, but not that much.
+###
