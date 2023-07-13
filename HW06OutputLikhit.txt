@@ -1,0 +1,156 @@
+> # Likhit Garimella
+> # Regression Analysis HW-6
+> 
+> # libraries
+> #install.packages("faraway")
+> #install.packages("olsrr")
+> #install.packages("car")
+> #install.packages("readr")
+> 
+> library(faraway)
+> library(olsrr)
+> library(car)
+> library(readr)
+> 
+> # (a)
+> # importing dataset
+> p3_1 <- read_csv('C:/Users/91630/Downloads/B1.csv',show_col_types = FALSE)
+> head(p3_1, 5)                                                                                
+# A tibble: 5 × 10
+      y    x1    x2    x3    x4    x5    x6    x7    x8    x9
+  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+1    10  2113  1985  38.9  64.7     4   868  59.7  2205  1917
+2    11  2003  2855  38.8  61.3     3   615  55    2096  1575
+3    11  2957  1737  40.1  60      14   914  65.6  1847  2175
+4    13  2285  2905  41.6  45.3    -4   957  61.4  1903  2476
+5    10  2971  1666  39.2  53.8    15   836  66.1  1457  1866
+> 
+> # saving output in a pdf file
+> pdf(file="C:/Users/91630/Desktop/HW06plotsLikhit.pdf")
+> 
+> # creating data frame with the required columns
+> df <- data.frame(y = p3_1$y, x2 = p3_1$x2, x7 = p3_1$x7, x8 = p3_1$x8)
+> lmod = lm(y ~ x2+x7+x8,data=p3_1)
+> 
+> # outputs using summary and anova statements
+> summary(lmod)
+
+Call:
+lm(formula = y ~ x2 + x7 + x8, data = p3_1)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.0370 -0.7129 -0.2043  1.1101  3.7049 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.808372   7.900859  -0.229 0.820899    
+x2           0.003598   0.000695   5.177 2.66e-05 ***
+x7           0.193960   0.088233   2.198 0.037815 *  
+x8          -0.004816   0.001277  -3.771 0.000938 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.706 on 24 degrees of freedom
+Multiple R-squared:  0.7863,	Adjusted R-squared:  0.7596 
+F-statistic: 29.44 on 3 and 24 DF,  p-value: 3.273e-08
+
+> anova(lmod)
+Analysis of Variance Table
+
+Response: y
+          Df  Sum Sq Mean Sq F value    Pr(>F)    
+x2         1  76.193  76.193  26.172 3.100e-05 ***
+x7         1 139.501 139.501  47.918 3.698e-07 ***
+x8         1  41.400  41.400  14.221 0.0009378 ***
+Residuals 24  69.870   2.911                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # (b) generating a Q-Q plot
+> qqnorm(residuals(lmod),ylab="Residuals",main="Q-Q plot")
+> qqline(residuals(lmod))
+> 
+> # (c) residual plots
+> # (i) x2 plot
+> plot(p3_1$x2,residuals(lmod),xlab="x2",ylab="Residuals")
+> abline(h=0)
+> 
+> # (ii) x7 plot
+> plot(p3_1$x7,residuals(lmod),xlab="x7",ylab="Residuals")
+> abline(h=0)
+> 
+> # (iii) x8 plot
+> plot(p3_1$x8,residuals(lmod),xlab="x8",ylab="Residuals")
+> abline(h=0)
+> 
+> # (d) partial regression plots
+> avPlots(lmod,print_plot = TRUE)
+There were 21 warnings (use warnings() to see them)
+> 
+> # (e) standardized and studentized plots
+> ols_plot_resid_stand(lmod)$data  
+   obs        sdres   color fct_color txt
+1    1  2.231851618 outlier   outlier   1
+2    2  1.225616368  normal    normal  NA
+3    3  1.702625305  normal    normal  NA
+4    4  1.029767789  normal    normal  NA
+5    5  0.006124483  normal    normal  NA
+6    6 -0.418876221  normal    normal  NA
+7    7 -1.206836995  normal    normal  NA
+8    8  0.299328499  normal    normal  NA
+9    9  1.338032316  normal    normal  NA
+10  10 -1.441760607  normal    normal  NA
+11  11 -0.036468456  normal    normal  NA
+12  12  1.251090093  normal    normal  NA
+13  13 -0.083851688  normal    normal  NA
+14  14 -0.160668820  normal    normal  NA
+15  15 -1.335367350  normal    normal  NA
+16  16  0.644990078  normal    normal  NA
+17  17 -0.196937383  normal    normal  NA
+18  18 -0.365011749  normal    normal  NA
+19  19 -0.078998342  normal    normal  NA
+20  20 -0.206464327  normal    normal  NA
+21  21 -1.869940122  normal    normal  NA
+22  22  0.817274105  normal    normal  NA
+23  23 -0.551056514  normal    normal  NA
+24  24 -0.276544687  normal    normal  NA
+25  25 -1.018586104  normal    normal  NA
+26  26 -0.094055761  normal    normal  NA
+27  27 -0.262130195  normal    normal  NA
+28  28 -1.048746774  normal    normal  NA
+> ols_plot_resid_stud(lmod)$data
+   obs          dsr  color fct_color txt
+1    1  2.454354223 normal    normal  NA
+2    2  1.239218310 normal    normal  NA
+3    3  1.777586702 normal    normal  NA
+4    4  1.031123075 normal    normal  NA
+5    5  0.005995537 normal    normal  NA
+6    6 -0.411563960 normal    normal  NA
+7    7 -1.218993620 normal    normal  NA
+8    8  0.293574644 normal    normal  NA
+9    9  1.361631132 normal    normal  NA
+10  10 -1.476806719 normal    normal  NA
+11  11 -0.035701602 normal    normal  NA
+12  12  1.266752172 normal    normal  NA
+13  13 -0.082098218 normal    normal  NA
+14  14 -0.157370596 normal    normal  NA
+15  15 -1.358701256 normal    normal  NA
+16  16  0.636954384 normal    normal  NA
+17  17 -0.192946834 normal    normal  NA
+18  18 -0.358322410 normal    normal  NA
+19  19 -0.077345090 normal    normal  NA
+20  20 -0.202296957 normal    normal  NA
+21  21 -1.980521136 normal    normal  NA
+22  22  0.811437522 normal    normal  NA
+23  23 -0.542899513 normal    normal  NA
+24  24 -0.271154408 normal    normal  NA
+25  25 -1.019417881 normal    normal  NA
+26  26 -0.092092392 normal    normal  NA
+27  27 -0.256979177 normal    normal  NA
+28  28 -1.051031132 normal    normal  NA
+> 
+> dev.off()
+null device 
+          1 
+> 
